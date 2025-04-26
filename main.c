@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "quotes.h"
+#include "t_bmp8.h"
 #include "bmp8.c"
 
 
