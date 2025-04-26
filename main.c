@@ -1,23 +1,75 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "quotes.h"
-#include <time.h>
+#include "bmp8.c"
+
+
 
 int main() {
-    char * quotes[MAX_QUOTES] = {
-        "Programmer - An organism that turns caffeine into code",
-        "Why do programmers prefer dark mode? Because light attracts bugs.",
-        "If debugging is the process of removing software bugs, then programming must be the process of putting them in.",
-        "I don't always test my code, but when I do, I do it in production.",
-        "Why do programmers always mix up Christmas and Halloween? Because Oct 31 == Dec 25!",
-        "Why did the programmer quit his job? Because he didn't get arrays.",
-        "Why do programmers prefer iOS development? Because the Swift.",
-        "Why do programmers prefer dogs over cats? Because dogs have fetch and cats have catch.",
-        "Why do programmers hate nature? It has too many bugs.",
-        "There are only 10 types of people in the world: Those who understand binary and those who don't."
-    };
+    // Charge l'image BMP en niveaux de gris
+    t_bmp8 * image = bmp8_loadImage("images/lena_gray.bmp");
+    // verifie que l'image a bien été chargée
+    if (image == NULL) {
+        printf("Erreur : Impossible de charger l'image.\n");
+        return 1;
+    }
 
-    srand(time(NULL));
-    print_random_quote(quotes);
-    printf("caca");
+    // affiche les informations de l'image
+    bmp8_printInfo(image);
+    bmp8_saveImage("images/copie_lena.bmp", image);// Sauvegarde
+
+    // APPLIQUE LE NEGATIF
+    bmp8_negative(image);
+    bmp8_saveImage("images/lena_negatif.bmp", image); // Sauvegarde
+
+    // APPLIQUE DE LA LUMINOSITE, EN AJOUTANT +50 PIXEL
+    bmp8_brightness(image, 50);
+    bmp8_saveImage("images/lena_bright.bmp", image);// Sauvegarde
+
+    // TRANSFORME L'IMAGE EN UNE IMAGE BINAIRE
+    bmp8_threshold(image,128);
+    bmp8_saveImage("images/lena_binary.bmp", image); // Sauvegarde
+
+    // ----- Box Blur -----
+    image = bmp8_loadImage("images/lena_gray.bmp");
+    float **kernel = createBoxBlurKernel();
+    bmp8_applyFilter(image, kernel, 3);
+    bmp8_saveImage("images/lena_boxblur.bmp", image);
+    freeKernel(kernel, 3);
+    bmp8_free(image);
+
+
+    // ----- Gaussian Blur -----
+    image = bmp8_loadImage("images/lena_gray.bmp");
+    kernel = createGaussianBlurKernel();
+    bmp8_applyFilter(image, kernel, 2);
+    bmp8_saveImage("images/lena_gaussian.bmp", image);
+    freeKernel(kernel, 3);
+    bmp8_free(image);
+
+    // ----- Outline -----
+    image = bmp8_loadImage("images/lena_gray.bmp");
+    kernel = createOutlineKernel();
+    bmp8_applyFilter(image, kernel, 3);
+    bmp8_saveImage("images/lena_outline.bmp", image);
+    freeKernel(kernel, 3);
+    bmp8_free(image);
+
+    // ----- Emboss -----
+    image = bmp8_loadImage("images/lena_gray.bmp");
+    kernel = createEmbossKernel();
+    bmp8_applyFilter(image, kernel, 3);
+    bmp8_saveImage("images/lena_emboss.bmp", image);
+    freeKernel(kernel, 3);
+    bmp8_free(image);
+
+    // ----- Sharpen -----
+    image = bmp8_loadImage("images/lena_gray.bmp");
+    kernel = createSharpenKernel();
+    bmp8_applyFilter(image, kernel, 3);
+    bmp8_saveImage("images/lena_sharpen.bmp", image);
+    freeKernel(kernel, 3);
+    bmp8_free(image);
+
     return 0;
 }

@@ -1,14 +1,16 @@
-// quotes.h
-#ifndef QUOTES_H
-#define QUOTES_H
+#ifndef T_BMP8_H
+#define T_BMP8_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#define MAX_QUOTES 10
+typedef struct{
+    unsigned char header[54];
+    unsigned char colorTable[1024];
+    unsigned char * data;
 
-void print_quote(char ** quotes, int index);
-void print_random_quote(char ** quotes);
+    unsigned int width;
+    unsigned int height;
+    unsigned int colorDepth;
+    unsigned int dataSize;
+}t_bmp8;
 
-#endif
+#endif //T_BMP8_H
