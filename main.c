@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include "t_bmp8.h"
 #include "bmp8.c"
-
+#include "t_bmp24.h"
+#include "bmp24.c"
 
 
 int main() {
@@ -70,6 +71,36 @@ int main() {
     bmp8_saveImage("images/lena_sharpen.bmp", image);
     freeKernel(kernel, 3);
     bmp8_free(image);
+
+    // Partie 2 : Traitement de l'image 24 bits (couleur)
+    t_bmp24 *image24 = bmp24_loadImage("images/flowers_color.bmp");
+    // Vérifie que l'image 24 bits a bien été chargée
+    if (image24 == NULL) {
+        printf("Erreur : Impossible de charger l'image 24 bits.\n");
+        return 1;
+    }
+
+    // Affiche les informations de l'image 24 bits
+    printf("Informations de l'image 24 bits :\n");
+    printf("Largeur : %d\n", image24->width);
+    printf("Hauteur : %d\n", image24->height);
+    printf("Profondeur de couleur : %d\n", image24->colorDepth);
+    bmp24_saveImage(image24, "images/copie_flowers_color.bmp"); // Sauvegarde
+
+    // Applique le négatif sur l'image 24 bits
+    bmp24_negative(image24);
+    bmp24_saveImage(image24, "images/flowers_color_negatif.bmp"); // Sauvegarde
+
+    // Applique de la luminosité, en ajoutant +50 pixels (image 24 bits)
+    bmp24_brightness(image24, 50);
+    bmp24_saveImage(image24, "images/flowers_color_bright.bmp"); // Sauvegarde
+
+    // Transforme l'image en niveaux de gris (image 24 bits)
+    bmp24_grayscale(image24);
+    bmp24_saveImage(image24, "images/flowers_color_gray.bmp"); // Sauvegarde
+
+    // Libère la mémoire pour l'image 24 bits
+    bmp24_free(image24);
 
     return 0;
 }
