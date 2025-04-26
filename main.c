@@ -18,5 +18,6 @@ int main() {
 
     srand(time(NULL));
     print_random_quote(quotes);
+    printf("caca");
     return 0;
 }
