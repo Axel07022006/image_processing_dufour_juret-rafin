@@ -251,3 +251,18 @@ void bmp24_brightness(t_bmp24 *img, int value) {
         }
     }
 }
+
+
+
+
+
+/// Filtres de convolution -- A FAIRE ----------
+///
+t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize);
+void bmp24_applyKernel(t_bmp24 *img, float **kernel, int kernelSize);
+
+void bmp24_boxBlur(t_bmp24 *img);
+void bmp24_gaussianBlur(t_bmp24 *img);
+void bmp24_outline(t_bmp24 *img);
+void bmp24_emboss(t_bmp24 *img);
+void bmp24_sharpen(t_bmp24 *img);
