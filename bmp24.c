@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "t_bmp24.h"
+#include "bmp24.h"
 
 // Constantes utiles
 #define BITMAP_MAGIC 0x00
@@ -261,8 +261,19 @@ void bmp24_brightness(t_bmp24 *img, int value) {
 t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize);
 void bmp24_applyKernel(t_bmp24 *img, float **kernel, int kernelSize);
 
-void bmp24_boxBlur(t_bmp24 *img);
-void bmp24_gaussianBlur(t_bmp24 *img);
-void bmp24_outline(t_bmp24 *img);
-void bmp24_emboss(t_bmp24 *img);
-void bmp24_sharpen(t_bmp24 *img);
+int bmp24_boxBlur(t_bmp24 *img) {
+    return 0;
+};
+
+int bmp24_gaussianBlur(t_bmp24 *img) {
+    return 0;
+};
+int bmp24_outline(t_bmp24 *img) {
+    return 0;
+};
+int bmp24_emboss(t_bmp24 *img) {
+    return 0;
+};
+int bmp24_sharpen(t_bmp24 *img) {
+    return 0;
+};

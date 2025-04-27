@@ -1,5 +1,5 @@
-#ifndef T_BMP8_H
-#define T_BMP8_H
+#ifndef BMP8_H
+#define BMP8_H
 
 
 typedef struct{
@@ -13,4 +13,4 @@ typedef struct{
     unsigned int dataSize;
 }t_bmp8;
 
-#endif //T_BMP8_H
+#endif //BMP8_H

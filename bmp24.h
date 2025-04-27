@@ -45,4 +45,5 @@ typedef struct {
     t_pixel **data; // Matrice de pixels
 } t_bmp24;
 
+
 #endif // T_BMP24_H

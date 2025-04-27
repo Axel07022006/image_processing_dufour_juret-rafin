@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "t_bmp8.h"
+#include "bmp8.h"
 #include "bmp8.c"
-#include "t_bmp24.h"
+#include "bmp24.h"
 #include "bmp24.c"
 
 
