@@ -18,7 +18,7 @@
 #define INFO_SIZE 0x28
 #define DEFAULT_DEPTH 0x18 // 24 bits
 
-// Fonction pour allouer dynamiquement une matrice de pixels
+// alloue la matrice de pixels
 t_pixel ** bmp24_allocateDataPixels(int width, int height) {
     t_pixel **pixels = malloc(height * sizeof(t_pixel *));
     if (pixels == NULL) {
@@ -37,7 +37,7 @@ t_pixel ** bmp24_allocateDataPixels(int width, int height) {
     return pixels;
 }
 
-// Fonction pour libérer la matrice de pixels
+// libère la mémoire allouée
 void bmp24_freeDataPixels(t_pixel **pixels, int height) {
     for (int i = 0; i < height; i++) {
         free(pixels[i]);
@@ -45,7 +45,7 @@ void bmp24_freeDataPixels(t_pixel **pixels, int height) {
     free(pixels);
 }
 
-// Fonction pour allouer une image BMP 24 bits
+// alloue l'image de 24 bits
 t_bmp24 * bmp24_allocate(int width, int height, int colorDepth) {
     t_bmp24 *img = malloc(sizeof(t_bmp24));
     if (img == NULL) {
@@ -66,7 +66,7 @@ t_bmp24 * bmp24_allocate(int width, int height, int colorDepth) {
     return img;
 }
 
-// Fonction pour libérer une image BMP 24 bits
+// libère la mémoire allouée
 void bmp24_free(t_bmp24 *img) {
     if (img != NULL) {
         bmp24_freeDataPixels(img->data, img->height);
@@ -74,29 +74,31 @@ void bmp24_free(t_bmp24 *img) {
     }
 }
 
-// Lecture brute depuis un fichier
-void file_rawRead(uint32_t position, void *buffer, uint32_t size, size_t n, FILE *file) {
+
+//lit depuis un fichier
+void file_rawRead (uint32_t position, void * buffer, uint32_t size, size_t n, FILE * file) {
     fseek(file, position, SEEK_SET);
     fread(buffer, size, n, file);
 }
 
-// Écriture brute dans un fichier
-void file_rawWrite(uint32_t position, void *buffer, uint32_t size, size_t n, FILE *file) {
+// écrit dans un fichier
+void file_rawWrite (uint32_t position, void * buffer, uint32_t size, size_t n, FILE * file) {
     fseek(file, position, SEEK_SET);
     fwrite(buffer, size, n, file);
 }
 
-// Fonction pour lire un pixel spécifique
+
+// lit un pixel spécifique
 void bmp24_readPixelValue(t_bmp24 *image, int x, int y, FILE *file) {
-    uint8_t buffer[3];  // RGB
-    file_rawRead(BITMAP_OFFSET + (y * image->width + x) * 3, buffer, sizeof(uint8_t), 3, file);
+    uint8_t buffer[3];  //
+    t_bmp_header header;
+    file_rawRead(BITMAP_MAGIC, &header, sizeof(t_bmp_header), 1, file);
     image->data[y][x].blue = buffer[0];
     image->data[y][x].green = buffer[1];
     image->data[y][x].red = buffer[2];
 }
 
-
-// Fonction pour lire les données de pixels d'une image BMP 24 bits
+// lit les données des pixels de l'image
 void bmp24_readPixelData(t_bmp24 *image, FILE *file) {
     for (int y = image->height - 1; y >= 0; y--) {  // lire de bas en haut
         for (int x = 0; x < image->width; x++) {
@@ -105,7 +107,8 @@ void bmp24_readPixelData(t_bmp24 *image, FILE *file) {
     }
 }
 
-// Fonction pour écrire un pixel spécifique
+
+// écrit un pixel specifique
 void bmp24_writePixelValue(t_bmp24 *image, int x, int y, FILE *file) {
     uint8_t buffer[3];
     buffer[0] = image->data[y][x].blue;
@@ -115,7 +118,7 @@ void bmp24_writePixelValue(t_bmp24 *image, int x, int y, FILE *file) {
     file_rawWrite(BITMAP_OFFSET + (y * image->width + x) * 3, buffer, sizeof(uint8_t), 3, file);
 }
 
-// Fonction pour écrire les données des pixels d'une image BMP 24 bits
+// ecrit les donnees d'un pixel d'une image
 void bmp24_writePixelData(t_bmp24 *image, FILE *file) {
     for (int y = image->height - 1; y >= 0; y--) {  // écrire de bas en haut
         for (int x = 0; x < image->width; x++) {
@@ -125,7 +128,7 @@ void bmp24_writePixelData(t_bmp24 *image, FILE *file) {
 }
 
 
-// Fonction pour charger une image BMP 24 bits depuis un fichier
+// charge l'image depuis un fichier
 t_bmp24 * bmp24_loadImage(const char *filename) {
     FILE *file = fopen(filename, "rb");
     if (file == NULL) {
@@ -137,32 +140,37 @@ t_bmp24 * bmp24_loadImage(const char *filename) {
     t_bmp_header header;
     t_bmp_info header_info;
 
-    // Lecture des en-têtes
+    // lecture des en-têtes
     file_rawRead(BITMAP_MAGIC, &header, sizeof(t_bmp_header), 1, file);
     file_rawRead(BITMAP_OFFSET, &header_info, sizeof(t_bmp_info), 1, file);
 
-    // Vérification du type de fichier BMP
+    //vérification du type de fichier
     if (header.type != BMP_TYPE) {
-        printf("Ce fichier n'est pas un fichier BMP valide.\n");
+        printf("Ce fichier n'est pas un fichier BMP.\n");
         fclose(file);
         return NULL;
     }
 
-    // Allocation de la structure image
+    //  cela alloue l'image et remplit ses informations
     img = bmp24_allocate(header_info.width, header_info.height, 24);
     if (img == NULL) {
         fclose(file);
         return NULL;
     }
 
-    // Lecture des pixels
+    img->header_info.xresolution = header_info.xresolution;  // Résolution horizontale
+    img->header_info.yresolution = header_info.yresolution;  // Résolution verticale
+    img->header_info.ncolors = header_info.ncolors;          // Nombre de couleurs
+    img->header_info.importantcolors = header_info.importantcolors;  // Nombre de couleurs importantes
+
+    // lit les pixels
     bmp24_readPixelData(img, file);
 
     fclose(file);
     return img;
 }
 
-// Fonction pour sauvegarder une image BMP 24 bits dans un fichier
+// sauvegarde l'image
 void bmp24_saveImage(t_bmp24 *img, const char *filename) {
     FILE *file = fopen(filename, "wb");
     if (file == NULL) {
@@ -170,18 +178,31 @@ void bmp24_saveImage(t_bmp24 *img, const char *filename) {
         return;
     }
 
-    // Écriture des en-têtes
-    file_rawWrite(BITMAP_MAGIC, &img->header, sizeof(t_bmp_header), 1, file);
-    file_rawWrite(BITMAP_OFFSET, &img->header_info, sizeof(t_bmp_info), 1, file);
+    // définit la taille de l'image
+    img->header.size = sizeof(t_bmp_header) + sizeof(t_bmp_info) + (img->width * img->height * 3);
+    img->header.offset = sizeof(t_bmp_header) + sizeof(t_bmp_info);
 
-    // Écriture des pixels
+    //initialise les valeurs par défaut pour les champs non-utilisés
+    img->header_info.xresolution = 0x0B13;  // 72 DPI
+    img->header_info.yresolution = 0x0B13;
+    img->header_info.ncolors = 0;           // Pas de palette
+    img->header_info.importantcolors = 0;   // Pas de couleurs importantes
+
+    // écrit l'entête
+    fwrite(&img->header, sizeof(t_bmp_header), 1, file);
+
+    // écrit le header
+    fwrite(&img->header_info, sizeof(t_bmp_info), 1, file);
+
+    // écrit les pixels
     bmp24_writePixelData(img, file);
 
     fclose(file);
+    printf("Image enregistrée avec succès dans '%s'\n", filename);
 }
 
 
-// Fonction pour inverser les couleurs de l'image (Négatif)
+// foncition negative -- A REVOIR
 void bmp24_negative(t_bmp24 *img) {
     for (int y = 0; y < img->height; y++) {
         for (int x = 0; x < img->width; x++) {
@@ -192,7 +213,7 @@ void bmp24_negative(t_bmp24 *img) {
     }
 }
 
-// Fonction pour convertir l'image en niveaux de gris
+//fonction niveaux de gris --- A REVOIR
 void bmp24_grayscale(t_bmp24 *img) {
     for (int y = 0; y < img->height; y++) {
         for (int x = 0; x < img->width; x++) {
@@ -205,14 +226,28 @@ void bmp24_grayscale(t_bmp24 *img) {
     }
 }
 
-// Fonction pour ajuster la luminosité de l'image
+// fonction luminosite- --- A REVOIR
 void bmp24_brightness(t_bmp24 *img, int value) {
     for (int y = 0; y < img->height; y++) {
         for (int x = 0; x < img->width; x++) {
             // Ajouter la valeur à chaque composant de couleur
-            img->data[y][x].red = (uint8_t)(img->data[y][x].red + value > 255 ? 255 : img->data[y][x].red + value);
-            img->data[y][x].green = (uint8_t)(img->data[y][x].green + value > 255 ? 255 : img->data[y][x].green + value);
-            img->data[y][x].blue = (uint8_t)(img->data[y][x].blue + value > 255 ? 255 : img->data[y][x].blue + value);
+            if (img->data[y][x].red + value > 255) {
+                img->data[y][x].red = 255;
+            } else {
+                img->data[y][x].red = (uint8_t)(img->data[y][x].red + value);
+            }
+
+            if (img->data[y][x].green + value > 255) {
+                img->data[y][x].green = 255;
+            } else {
+                img->data[y][x].green = (uint8_t)(img->data[y][x].green + value);
+            }
+
+            if (img->data[y][x].blue + value > 255) {
+                img->data[y][x].blue = 255;
+            } else {
+                img->data[y][x].blue = (uint8_t)(img->data[y][x].blue + value);
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ int main() {
     bmp8_threshold(image,128);
     bmp8_saveImage("images/lena_binary.bmp", image); // Sauvegarde
 
-    // ----- Box Blur -----
+    //Box  Blur
     image = bmp8_loadImage("images/lena_gray.bmp");
     float **kernel = createBoxBlurKernel();
     bmp8_applyFilter(image, kernel, 3);
@@ -40,7 +40,7 @@ int main() {
     bmp8_free(image);
 
 
-    // ----- Gaussian Blur -----
+    //Gaussian Blur
     image = bmp8_loadImage("images/lena_gray.bmp");
     kernel = createGaussianBlurKernel();
     bmp8_applyFilter(image, kernel, 2);
@@ -48,7 +48,7 @@ int main() {
     freeKernel(kernel, 3);
     bmp8_free(image);
 
-    // ----- Outline -----
+    // Outline
     image = bmp8_loadImage("images/lena_gray.bmp");
     kernel = createOutlineKernel();
     bmp8_applyFilter(image, kernel, 3);
@@ -56,7 +56,7 @@ int main() {
     freeKernel(kernel, 3);
     bmp8_free(image);
 
-    // ----- Emboss -----
+    // Emboss
     image = bmp8_loadImage("images/lena_gray.bmp");
     kernel = createEmbossKernel();
     bmp8_applyFilter(image, kernel, 3);
@@ -64,7 +64,7 @@ int main() {
     freeKernel(kernel, 3);
     bmp8_free(image);
 
-    // ----- Sharpen -----
+    // Sharpen
     image = bmp8_loadImage("images/lena_gray.bmp");
     kernel = createSharpenKernel();
     bmp8_applyFilter(image, kernel, 3);
@@ -101,6 +101,5 @@ int main() {
 
     // Libère la mémoire pour l'image 24 bits
     bmp24_free(image24);
-
     return 0;
 }
