@@ -16,7 +16,7 @@ int main() {
     }
 
     // affiche les informations de l'image
-    printf("test");
+    printf("test ");
     bmp8_printInfo(image);
     bmp8_saveImage("images/copie_lena.bmp", image);// Sauvegarde
 
