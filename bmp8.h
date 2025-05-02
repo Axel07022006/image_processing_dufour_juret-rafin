@@ -13,4 +13,6 @@ typedef struct{
     unsigned int dataSize;
 }t_bmp8;
 
+void bmp8_printInfo(t_bmp8 *image);
+
 #endif //BMP8_H
