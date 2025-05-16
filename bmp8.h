@@ -1,5 +1,6 @@
-#ifndef BMP8_H
-#define BMP8_H
+
+#ifndef T_BMP8_H
+#define T_BMP8_H
 
 
 typedef struct{
@@ -13,6 +14,21 @@ typedef struct{
     unsigned int dataSize;
 }t_bmp8;
 
-void bmp8_printInfo(t_bmp8 *image);
+t_bmp8 * bmp8_loadImage(const char * filename);
+void bmp8_saveImage(const char * filename, t_bmp8 * img);
+void bmp8_free(t_bmp8 * img);
+void bmp8_printInfo(t_bmp8 * img);
+void bmp8_negative(t_bmp8 * img);
+void bmp8_brightness(t_bmp8 * img, int value);
+void bmp8_threshold(t_bmp8 * img, int threshold);
+void bmp8_applyFilter(t_bmp8 *img, float **kernel, int kernelSize);
+float **createKernel(float values[3][3], float divisor);
+void freeKernel(float **kernel, int size);
+float **createBoxBlurKernel();
+float **createGaussianBlurKernel();
+float **createOutlineKernel();
+float **createEmbossKernel();
+float **createSharpenKernel();
 
-#endif //BMP8_H
+
+#endif //T_BMP8_H

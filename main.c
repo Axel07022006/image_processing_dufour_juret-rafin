@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "bmp8.h"
-#include "bmp8.c"
 #include "bmp24.h"
-#include "bmp24.c"
 
 
 int main() {
@@ -16,7 +14,6 @@ int main() {
     }
 
     // affiche les informations de l'image
-    printf("test ");
     bmp8_printInfo(image);
     bmp8_saveImage("images/copie_lena.bmp", image);// Sauvegarde
 
@@ -102,36 +99,6 @@ int main() {
 
 
     /// Filtres de convolution ///
-
-
-    //applique Box Blur
-    bmp24_boxBlur(image24);
-    bmp24_saveImage(image24, "images/flowers_color_boxblur.bmp");
-    bmp24_free(image24);
-
-    //applique Gaussian Blur
-    image24 = bmp24_loadImage("images/flowers_color.bmp");
-    bmp24_gaussianBlur(image24);
-    bmp24_saveImage(image24, "images/flowers_color_gaussian.bmp");
-    bmp24_free(image24);
-
-    //applique Outline
-    image24 = bmp24_loadImage("images/flowers_color.bmp");
-    bmp24_outline(image24);
-    bmp24_saveImage(image24, "images/flowers_color_outline.bmp");
-    bmp24_free(image24);
-
-    //applique Emboss
-    image24 = bmp24_loadImage("images/flowers_color.bmp");
-    bmp24_emboss(image24);
-    bmp24_saveImage(image24, "images/flowers_color_emboss.bmp");
-    bmp24_free(image24);
-
-    //applique Sharpen
-    image24 = bmp24_loadImage("images/flowers_color.bmp");
-    bmp24_sharpen(image24);
-    bmp24_saveImage(image24, "images/flowers_color_sharpen.bmp");
-    bmp24_free(image24);
 
 
     // Libère la mémoire pour l'image 24 bits

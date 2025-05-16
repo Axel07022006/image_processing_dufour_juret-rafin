@@ -19,7 +19,12 @@
 #define DEFAULT_DEPTH 0x18 // 24 bits
 
 // alloue la matrice de pixels
-t_pixel ** bmp24_allocateDataPixels(int width, int height) {
+t_pixel ** bmp24_allocateDataPixels(int width, int height, int colorDepth) {
+    if (colorDepth != 24) {
+        fprintf(stderr, "Seul le format 24 bits est supporté pour le moment.\n");
+        return NULL;
+    }
+
     t_pixel **pixels = malloc(height * sizeof(t_pixel *));
     if (pixels == NULL) {
         perror("Erreur d'allocation de la matrice de pixels");
@@ -53,7 +58,7 @@ t_bmp24 * bmp24_allocate(int width, int height, int colorDepth) {
         return NULL;
     }
 
-    img->data = bmp24_allocateDataPixels(width, height);
+    img->data = bmp24_allocateDataPixels(width, height, colorDepth);
     if (img->data == NULL) {
         free(img);
         return NULL;
@@ -86,6 +91,7 @@ void file_rawWrite (uint32_t position, void * buffer, uint32_t size, size_t n, F
     fseek(file, position, SEEK_SET);
     fwrite(buffer, size, n, file);
 }
+
 
 
 // lit un pixel spécifique
@@ -178,28 +184,35 @@ void bmp24_saveImage(t_bmp24 *img, const char *filename) {
         return;
     }
 
-    // définit la taille de l'image
+    // Header principal
+    img->header.type = BMP_TYPE;
     img->header.size = sizeof(t_bmp_header) + sizeof(t_bmp_info) + (img->width * img->height * 3);
+    img->header.reserved1 = 0;
+    img->header.reserved2 = 0;
     img->header.offset = sizeof(t_bmp_header) + sizeof(t_bmp_info);
 
-    //initialise les valeurs par défaut pour les champs non-utilisés
-    img->header_info.xresolution = 0x0B13;  // 72 DPI
+    // Header info
+    img->header_info.size = INFO_SIZE;
+    img->header_info.width = img->width;
+    img->header_info.height = img->height;
+    img->header_info.planes = 1;
+    img->header_info.bits = DEFAULT_DEPTH;
+    img->header_info.compression = 0;
+    img->header_info.imagesize = img->width * img->height * 3;
+    img->header_info.xresolution = 0x0B13;
     img->header_info.yresolution = 0x0B13;
-    img->header_info.ncolors = 0;           // Pas de palette
-    img->header_info.importantcolors = 0;   // Pas de couleurs importantes
+    img->header_info.ncolors = 0;
+    img->header_info.importantcolors = 0;
 
-    // écrit l'entête
+    // Écriture dans le fichier
     fwrite(&img->header, sizeof(t_bmp_header), 1, file);
-
-    // écrit le header
     fwrite(&img->header_info, sizeof(t_bmp_info), 1, file);
-
-    // écrit les pixels
     bmp24_writePixelData(img, file);
 
     fclose(file);
     printf("Image enregistrée avec succès dans '%s'\n", filename);
 }
+
 
 
 // foncition negative -- A REVOIR
@@ -258,22 +271,11 @@ void bmp24_brightness(t_bmp24 *img, int value) {
 
 /// Filtres de convolution -- A FAIRE ----------
 ///
-t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize);
-void bmp24_applyKernel(t_bmp24 *img, float **kernel, int kernelSize);
+t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize){t_pixel p; return p;}
+void bmp24_applyKernel(t_bmp24 *img, float **kernel, int kernelSize){}
 
-int bmp24_boxBlur(t_bmp24 *img) {
-    return 0;
-};
-
-int bmp24_gaussianBlur(t_bmp24 *img) {
-    return 0;
-};
-int bmp24_outline(t_bmp24 *img) {
-    return 0;
-};
-int bmp24_emboss(t_bmp24 *img) {
-    return 0;
-};
-int bmp24_sharpen(t_bmp24 *img) {
-    return 0;
-};
+void bmp24_boxBlur(t_bmp24 *img){}
+void bmp24_gaussianBlur(t_bmp24 *img){}
+void bmp24_outline(t_bmp24 *img){}
+void bmp24_emboss(t_bmp24 *img){}
+void bmp24_sharpen(t_bmp24 *img){}

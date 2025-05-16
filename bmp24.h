@@ -6,33 +6,33 @@
 
 // Structure pour représenter un pixel RGB
 typedef struct {
-    uint8_t red;   // Canal rouge
-    uint8_t green; // Canal vert
-    uint8_t blue;  // Canal bleu
+    uint8_t red;//rouge
+    uint8_t green; //vert
+    uint8_t blue;  //Bleu
 }t_pixel;
 
 // Structure pour l'en-tête du fichier BMP (14 octets)
 typedef struct {
-    uint16_t type;       // Signature du fichier ('BM')
-    uint32_t size;       // Taille totale du fichier
-    uint16_t reserved1;  // Réservé (0)
-    uint16_t reserved2;  // Réservé (0)
-    uint32_t offset;     // Offset pour les données de l'image
+    uint16_t type;
+    uint32_t size;
+    uint16_t reserved1;
+    uint16_t reserved2;
+    uint32_t offset;
 } t_bmp_header;
 
 // Structure pour l'en-tête info du fichier BMP (40 octets)
 typedef struct {
-    uint32_t size;            // Taille de cette structure
-    int32_t width;            // Largeur de l'image
-    int32_t height;           // Hauteur de l'image
-    uint16_t planes;          // Nombre de plans (1)
-    uint16_t bits;            // Bits par pixel (24 ici)
-    uint32_t compression;     // Compression (0 = aucune)
-    uint32_t imagesize;       // Taille de l'image brute
-    int32_t xresolution;      // Résolution horizontale
-    int32_t yresolution;      // Résolution verticale
-    uint32_t ncolors;         // Nombre de couleurs utilisées
-    uint32_t importantcolors; // Nombre de couleurs importantes
+    uint32_t size;
+    int32_t width;
+    int32_t height;
+    uint16_t planes;
+    uint16_t bits;
+    uint32_t compression;
+    uint32_t imagesize;
+    int32_t xresolution;
+    int32_t yresolution;
+    uint32_t ncolors;
+    uint32_t importantcolors;
 } t_bmp_info;
 
 // Structure principale pour une image BMP 24 bits
@@ -41,9 +41,34 @@ typedef struct {
     t_bmp_info header_info;
     int width;
     int height;
-    int colorDepth; // 24 normalement
-    t_pixel **data; // Matrice de pixels
+    int colorDepth;   // 24 normalement
+    t_pixel ** data;// Matrice de pixels
 } t_bmp24;
+
+
+t_pixel ** bmp24_allocateDataPixels(int width, int height, int colorDepth);
+void bmp24_freeDataPixels(t_pixel **pixels, int height);
+t_bmp24 * bmp24_allocate(int width, int height, int colorDepth);
+void bmp24_free(t_bmp24 *img);
+void file_rawRead (uint32_t position, void * buffer, uint32_t size, size_t n, FILE * file);
+void file_rawWrite (uint32_t position, void * buffer, uint32_t size, size_t n, FILE * file);
+void bmp24_readPixelValue(t_bmp24 *image, int x, int y, FILE *file);
+void bmp24_readPixelData(t_bmp24 *image, FILE *file);
+void bmp24_writePixelValue(t_bmp24 *image, int x, int y, FILE *file);
+void bmp24_writePixelData(t_bmp24 *image, FILE *file);
+t_bmp24 * bmp24_loadImage(const char *filename);
+void bmp24_saveImage(t_bmp24 *img, const char *filename);
+void bmp24_negative(t_bmp24 *img);
+void bmp24_grayscale(t_bmp24 *img);
+void bmp24_brightness(t_bmp24 *img, int value);
+
+t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize);
+void bmp24_applyKernel(t_bmp24 *img, float **kernel, int kernelSize);
+void bmp24_boxBlur(t_bmp24 *img);
+void bmp24_gaussianBlur(t_bmp24 *img);
+void bmp24_outline(t_bmp24 *img);
+void bmp24_emboss(t_bmp24 *img);
+void bmp24_sharpen(t_bmp24 *img);
 
 
 #endif // T_BMP24_H
