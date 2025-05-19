@@ -21,20 +21,20 @@
 // alloue la matrice de pixels
 t_pixel ** bmp24_allocateDataPixels(int width, int height, int colorDepth) {
     if (colorDepth != 24) {
-        fprintf(stderr, "Seul le format 24 bits est supporté pour le moment.\n");
+        printf("Seul le format 24 bits est supporté pour le moment.\n");
         return NULL;
     }
 
     t_pixel **pixels = malloc(height * sizeof(t_pixel *));
     if (pixels == NULL) {
-        perror("Erreur d'allocation de la matrice de pixels");
+        printf("Erreur d'allocation de la matrice de pixels\n");
         return NULL;
     }
 
     for (int i = 0; i < height; i++) {
         pixels[i] = malloc(width * sizeof(t_pixel));
         if (pixels[i] == NULL) {
-            perror("Erreur d'allocation des lignes de pixels");
+            printf("Erreur d'allocation des lignes de pixels\n");
             return NULL;
         }
     }
@@ -54,7 +54,7 @@ void bmp24_freeDataPixels(t_pixel **pixels, int height) {
 t_bmp24 * bmp24_allocate(int width, int height, int colorDepth) {
     t_bmp24 *img = malloc(sizeof(t_bmp24));
     if (img == NULL) {
-        perror("Erreur d'allocation de l'image");
+        printf("Erreur d'allocation de l'image\n");
         return NULL;
     }
 
@@ -138,7 +138,7 @@ void bmp24_writePixelData(t_bmp24 *image, FILE *file) {
 t_bmp24 * bmp24_loadImage(const char *filename) {
     FILE *file = fopen(filename, "rb");
     if (file == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
+        printf("Erreur lors de l'ouverture du fichier\n");
         return NULL;
     }
 
@@ -180,7 +180,7 @@ t_bmp24 * bmp24_loadImage(const char *filename) {
 void bmp24_saveImage(t_bmp24 *img, const char *filename) {
     FILE *file = fopen(filename, "wb");
     if (file == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
+        printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
 

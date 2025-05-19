@@ -1,4 +1,3 @@
-
 #ifndef T_BMP8_H
 #define T_BMP8_H
 

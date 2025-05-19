@@ -5,16 +5,19 @@
 
 ///////////////////////
 t_bmp8 * bmp8_loadImage(const char * filename) {
+
+    printf("NOM : %s\n",filename);
     FILE * file = fopen(filename, "rb");
     if (file == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
+        printf("file == NULL\n");
+        printf("Erreur lors de l'ouverture du fichier\n");
         return NULL;
     }
 
     // Allouer la structure
     t_bmp8 * image = (t_bmp8 *)malloc(sizeof(t_bmp8));
     if (image == NULL) {
-        perror("Erreur d'allocation mémoire");
+        printf("Erreur d'allocation mémoire\n");
         fclose(file);
         return NULL;
     }
@@ -29,7 +32,7 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
 
     // Vérification que l'image est bien en 8 bits
     if (image->colorDepth != 8) {
-        fprintf(stderr, "Erreur : image non en 8 bits\n");
+        printf("Erreur : image non en 8 bits\n");
         fclose(file);
         free(image);
         return NULL;
@@ -44,7 +47,7 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
     // Allouer la mémoire pour les données
     image->data = (unsigned char *)malloc(image->dataSize * sizeof(unsigned char));
     if (image->data == NULL) {
-        perror("Erreur d'allocation mémoire pour les données");
+        printf("Erreur d'allocation mémoire pour les données\n");
         fclose(file);
         free(image);
         return NULL;
@@ -62,27 +65,27 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
 void bmp8_saveImage(const char * filename, t_bmp8 * img) {
     FILE *file = fopen(filename, "wb");
     if (file == NULL) {
-        perror("Erreur lors de l'ouverture du fichier pour l'écriture");
+        printf("Erreur lors de l'ouverture du fichier pour l'écriture\n");
         return;
     }
 
     // Écrire l'en-tête BMP (54 octets)
     if (fwrite(img->header, sizeof(unsigned char), 54, file) != 54) {
-        perror("Erreur lors de l'écriture de l'en-tête");
+        printf("Erreur lors de l'écriture de l'en-tête\n");
         fclose(file);
         return;
     }
 
     // Écrire la table de couleurs (1024 octets pour image 8 bits)
     if (fwrite(img->colorTable, sizeof(unsigned char), 1024, file) != 1024) {
-        perror("Erreur lors de l'écriture de la table de couleurs");
+        printf("Erreur lors de l'écriture de la table de couleurs\n");
         fclose(file);
         return;
     }
 
     // Écrire les données de l'image
     if (fwrite(img->data, sizeof(unsigned char), img->dataSize, file) != img->dataSize) {
-        perror("Erreur lors de l'écriture des données d'image");
+        printf("Erreur lors de l'écriture des données d'image\n");
         fclose(file);
         return;
     }
@@ -114,7 +117,7 @@ void bmp8_printInfo(t_bmp8 * img){
 ///////////////////////
 void bmp8_negative(t_bmp8 * img) {
     if (img == NULL || img->data == NULL) {
-        fprintf(stderr, "Erreur : image ou données nulles\n");
+        printf("Erreur : image ou données nulles\n");
         return;
     }
 
@@ -127,7 +130,7 @@ void bmp8_negative(t_bmp8 * img) {
 ///////////////////////
 void bmp8_brightness(t_bmp8 * img, int value) {
     if (img == NULL || img->data == NULL) {
-        fprintf(stderr, "Erreur : image ou données nulles\n");
+        printf("Erreur : image ou données nulles\n");
         return;
     }
 
@@ -148,7 +151,7 @@ void bmp8_brightness(t_bmp8 * img, int value) {
 ///////////////////////
 void bmp8_threshold(t_bmp8 * img, int threshold) {
     if (img == NULL || img->data == NULL) {
-        fprintf(stderr, "Erreur : image ou données nulles\n");
+        printf("Erreur : image ou données nulles\n");
         return;
     }
 
