@@ -85,6 +85,7 @@ int main() {
     printf("Largeur : %d\n", image24->width);
     printf("Hauteur : %d\n", image24->height);
     printf("Profondeur de couleur : %d\n", image24->colorDepth);
+
     bmp24_saveImage(image24, "../images/copie_flowers_color.bmp"); // Sauvegarde
 
     // Applique le négatif sur l'image 24 bits

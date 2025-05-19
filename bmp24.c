@@ -4,27 +4,10 @@
 #include <string.h>
 #include "bmp24.h"
 
-// Constantes utiles
-#define BITMAP_MAGIC 0x00
-#define BITMAP_SIZE 0x02
-#define BITMAP_OFFSET 0x0A
-#define BITMAP_WIDTH 0x12
-#define BITMAP_HEIGHT 0x16
-#define BITMAP_DEPTH 0x1C
-#define BITMAP_SIZE_RAW 0x22
 
-#define BMP_TYPE 0x4D42
-#define HEADER_SIZE 0x0E
-#define INFO_SIZE 0x28
-#define DEFAULT_DEPTH 0x18 // 24 bits
 
 // alloue la matrice de pixels
 t_pixel ** bmp24_allocateDataPixels(int width, int height, int colorDepth) {
-    if (colorDepth != 24) {
-        printf("Seul le format 24 bits est supporté pour le moment.\n");
-        return NULL;
-    }
-
     t_pixel **pixels = malloc(height * sizeof(t_pixel *));
     if (pixels == NULL) {
         printf("Erreur d'allocation de la matrice de pixels\n");
@@ -58,15 +41,14 @@ t_bmp24 * bmp24_allocate(int width, int height, int colorDepth) {
         return NULL;
     }
 
+    img->width = width;
+    img->height = height;
+    img->colorDepth = colorDepth;
     img->data = bmp24_allocateDataPixels(width, height, colorDepth);
     if (img->data == NULL) {
         free(img);
         return NULL;
     }
-
-    img->width = width;
-    img->height = height;
-    img->colorDepth = colorDepth;
 
     return img;
 }
@@ -96,16 +78,15 @@ void file_rawWrite (uint32_t position, void * buffer, uint32_t size, size_t n, F
 
 // lit un pixel spécifique
 void bmp24_readPixelValue(t_bmp24 *image, int x, int y, FILE *file) {
-    uint8_t buffer[3];  //
-    t_bmp_header header;
-    file_rawRead(BITMAP_MAGIC, &header, sizeof(t_bmp_header), 1, file);
-    image->data[y][x].blue = buffer[0];
-    image->data[y][x].green = buffer[1];
-    image->data[y][x].red = buffer[2];
+    fread(&image->data[y][x].blue,1,1,file);
+    fread(&image->data[y][x].green,1,1,file);
+    fread(&image->data[y][x].red,1,1,file);
 }
+
 
 // lit les données des pixels de l'image
 void bmp24_readPixelData(t_bmp24 *image, FILE *file) {
+    fseek(file, image->header.offset, SEEK_SET);
     for (int y = image->height - 1; y >= 0; y--) {  // lire de bas en haut
         for (int x = 0; x < image->width; x++) {
             bmp24_readPixelValue(image, x, y, file);
@@ -116,16 +97,14 @@ void bmp24_readPixelData(t_bmp24 *image, FILE *file) {
 
 // écrit un pixel specifique
 void bmp24_writePixelValue(t_bmp24 *image, int x, int y, FILE *file) {
-    uint8_t buffer[3];
-    buffer[0] = image->data[y][x].blue;
-    buffer[1] = image->data[y][x].green;
-    buffer[2] = image->data[y][x].red;
-
-    file_rawWrite(BITMAP_OFFSET + (y * image->width + x) * 3, buffer, sizeof(uint8_t), 3, file);
+    fwrite(&image->data[y][x].blue,1,1,file);
+    fwrite(&image->data[y][x].green,1,1,file);
+    fwrite(&image->data[y][x].red,1,1,file);
 }
 
 // ecrit les donnees d'un pixel d'une image
 void bmp24_writePixelData(t_bmp24 *image, FILE *file) {
+    fseek(file,image->header.offset,SEEK_SET);
     for (int y = image->height - 1; y >= 0; y--) {  // écrire de bas en haut
         for (int x = 0; x < image->width; x++) {
             bmp24_writePixelValue(image, x, y, file);
@@ -136,77 +115,41 @@ void bmp24_writePixelData(t_bmp24 *image, FILE *file) {
 
 // charge l'image depuis un fichier
 t_bmp24 * bmp24_loadImage(const char *filename) {
-    FILE *file = fopen(filename, "rb");
-    if (file == NULL) {
+    FILE * file = NULL;
+    if (filename == NULL) {
         printf("Erreur lors de l'ouverture du fichier\n");
         return NULL;
     }
 
-    t_bmp24 *img = NULL;
-    t_bmp_header header;
-    t_bmp_info header_info;
+    file = fopen(filename, "rb");
 
-    // lecture des en-têtes
-    file_rawRead(BITMAP_MAGIC, &header, sizeof(t_bmp_header), 1, file);
-    file_rawRead(BITMAP_OFFSET, &header_info, sizeof(t_bmp_info), 1, file);
+    int width,height,colorDepth;
+    file_rawRead(BITMAP_WIDTH,&width,sizeof(width),1,file);
+    file_rawRead(BITMAP_HEIGHT,&height,sizeof(height),1,file);
+    file_rawRead(BITMAP_DEPTH,&colorDepth,sizeof(colorDepth),1,file);
 
-    //vérification du type de fichier
-    if (header.type != BMP_TYPE) {
-        printf("Ce fichier n'est pas un fichier BMP.\n");
-        fclose(file);
-        return NULL;
-    }
-
-    //  cela alloue l'image et remplit ses informations
-    img = bmp24_allocate(header_info.width, header_info.height, 24);
-    if (img == NULL) {
-        fclose(file);
-        return NULL;
-    }
-
-    img->header_info.xresolution = header_info.xresolution;  // Résolution horizontale
-    img->header_info.yresolution = header_info.yresolution;  // Résolution verticale
-    img->header_info.ncolors = header_info.ncolors;          // Nombre de couleurs
-    img->header_info.importantcolors = header_info.importantcolors;  // Nombre de couleurs importantes
-
-    // lit les pixels
-    bmp24_readPixelData(img, file);
+    t_bmp24* bmp24 = bmp24_allocate(width, height, colorDepth);
+    file_rawRead(BITMAP_MAGIC,&(bmp24->header),sizeof(bmp24->header),1,file);
+    file_rawRead(sizeof(bmp24->header),&(bmp24->header_info),sizeof(bmp24->header_info),1,file);
+    bmp24_readPixelData(bmp24,file);
 
     fclose(file);
-    return img;
+    return bmp24;
 }
 
 // sauvegarde l'image
 void bmp24_saveImage(t_bmp24 *img, const char *filename) {
-    FILE *file = fopen(filename, "wb");
+    FILE * file = NULL;
+    file = fopen(filename, "wb");
     if (file == NULL) {
         printf("Erreur lors de l'ouverture du fichier\n");
         return;
     }
 
-    // Header principal
-    img->header.type = BMP_TYPE;
-    img->header.size = sizeof(t_bmp_header) + sizeof(t_bmp_info) + (img->width * img->height * 3);
-    img->header.reserved1 = 0;
-    img->header.reserved2 = 0;
-    img->header.offset = sizeof(t_bmp_header) + sizeof(t_bmp_info);
-
-    // Header info
-    img->header_info.size = INFO_SIZE;
-    img->header_info.width = img->width;
-    img->header_info.height = img->height;
-    img->header_info.planes = 1;
-    img->header_info.bits = DEFAULT_DEPTH;
-    img->header_info.compression = 0;
-    img->header_info.imagesize = img->width * img->height * 3;
-    img->header_info.xresolution = 0x0B13;
-    img->header_info.yresolution = 0x0B13;
-    img->header_info.ncolors = 0;
-    img->header_info.importantcolors = 0;
 
     // Écriture dans le fichier
-    fwrite(&img->header, sizeof(t_bmp_header), 1, file);
-    fwrite(&img->header_info, sizeof(t_bmp_info), 1, file);
+    file_rawWrite(BITMAP_MAGIC,&img->header,sizeof(img->header),1,file);
+    file_rawWrite(sizeof(img->header),&img->header_info,sizeof(img->header_info),1,file);
     bmp24_writePixelData(img, file);
 
     fclose(file);
