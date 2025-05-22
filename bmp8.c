@@ -6,7 +6,6 @@
 ///////////////////////
 t_bmp8 * bmp8_loadImage(const char * filename) {
 
-    printf("NOM : %s\n",filename);
     FILE * file = fopen(filename, "rb");
     if (file == NULL) {
         printf("file == NULL\n");
@@ -106,7 +105,7 @@ void bmp8_free(t_bmp8 * img) {
 
 ///////////////////////
 void bmp8_printInfo(t_bmp8 * img){
-    printf("Image Info:\n");
+    printf("Image Info 8bits:\n");
     printf("  Width: %d\n", img->width);
     printf("  Height: %d\n", img->height);
     printf("  Color Depth: %d\n", img->colorDepth);

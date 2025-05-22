@@ -2,7 +2,7 @@
 #define T_BMP24_H
 
 #include <stdint.h> // Pour uint8_t, uint16_t, uint32_t, int32_t
-
+#pragma pack(push, 1) // pour éviter le padding de structure
 // Constantes utiles
 #define BITMAP_MAGIC 0x00
 #define BITMAP_SIZE 0x02

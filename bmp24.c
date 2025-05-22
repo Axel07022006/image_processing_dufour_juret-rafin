@@ -5,7 +5,6 @@
 #include "bmp24.h"
 
 
-
 // alloue la matrice de pixels
 t_pixel ** bmp24_allocateDataPixels(int width, int height, int colorDepth) {
     t_pixel **pixels = malloc(height * sizeof(t_pixel *));
@@ -78,9 +77,9 @@ void file_rawWrite (uint32_t position, void * buffer, uint32_t size, size_t n, F
 
 // lit un pixel spécifique
 void bmp24_readPixelValue(t_bmp24 *image, int x, int y, FILE *file) {
-    fread(&image->data[y][x].blue,1,1,file);
-    fread(&image->data[y][x].green,1,1,file);
-    fread(&image->data[y][x].red,1,1,file);
+    fread(&image->data[y][x].blue, 1, 1, file);
+    fread(&image->data[y][x].green, 1, 1, file);
+    fread(&image->data[y][x].red, 1, 1, file);
 }
 
 
@@ -97,9 +96,9 @@ void bmp24_readPixelData(t_bmp24 *image, FILE *file) {
 
 // écrit un pixel specifique
 void bmp24_writePixelValue(t_bmp24 *image, int x, int y, FILE *file) {
-    fwrite(&image->data[y][x].blue,1,1,file);
-    fwrite(&image->data[y][x].green,1,1,file);
-    fwrite(&image->data[y][x].red,1,1,file);
+    fwrite(&image->data[y][x].blue, 1, 1, file);
+    fwrite(&image->data[y][x].green, 1, 1, file);
+    fwrite(&image->data[y][x].red, 1, 1, file);
 }
 
 // ecrit les donnees d'un pixel d'une image
@@ -123,10 +122,14 @@ t_bmp24 * bmp24_loadImage(const char *filename) {
 
     file = fopen(filename, "rb");
 
-    int width,height,colorDepth;
+    int width = 0;
+    int height = 0;
+    int colorDepth = 0;
+
     file_rawRead(BITMAP_WIDTH,&width,sizeof(width),1,file);
-    file_rawRead(BITMAP_HEIGHT,&height,sizeof(height),1,file);
     file_rawRead(BITMAP_DEPTH,&colorDepth,sizeof(colorDepth),1,file);
+    file_rawRead(BITMAP_HEIGHT,&height,sizeof(height),1,file);
+
 
     t_bmp24* bmp24 = bmp24_allocate(width, height, colorDepth);
     file_rawRead(BITMAP_MAGIC,&(bmp24->header),sizeof(bmp24->header),1,file);
@@ -214,11 +217,142 @@ void bmp24_brightness(t_bmp24 *img, int value) {
 
 /// Filtres de convolution -- A FAIRE ----------
 ///
-t_pixel bmp24_convolution (t_bmp24 * img, int x, int y, float ** kernel, int kernelSize){t_pixel p; return p;}
-void bmp24_applyKernel(t_bmp24 *img, float **kernel, int kernelSize){}
+t_pixel bmp24_convolution(t_bmp24 *img, int x, int y, float **kernel, int kernelSize) {
+    int offset = kernelSize / 2;
+    float red = 0.0, green = 0.0, blue = 0.0;
 
-void bmp24_boxBlur(t_bmp24 *img){}
-void bmp24_gaussianBlur(t_bmp24 *img){}
-void bmp24_outline(t_bmp24 *img){}
-void bmp24_emboss(t_bmp24 *img){}
-void bmp24_sharpen(t_bmp24 *img){}
+    for (int ky = 0; ky < kernelSize; ky++) {
+        for (int kx = 0; kx < kernelSize; kx++) {
+            int ix = x + (kx - offset);
+            int iy = y + (ky - offset);
+
+            // Gestion des bords : on ignore les pixels hors image
+            if (ix < 0 || ix >= img->width || iy < 0 || iy >= img->height)
+                continue;
+
+            t_pixel p = img->data[iy][ix];
+            float k = kernel[ky][kx];
+            red   += p.red   * k;
+            green += p.green * k;
+            blue  += p.blue  * k;
+        }
+    }
+
+    t_pixel result;
+    result.red   = (uint8_t)(red   < 0 ? 0 : (red   > 255 ? 255 : red));
+    result.green = (uint8_t)(green < 0 ? 0 : (green > 255 ? 255 : green));
+    result.blue  = (uint8_t)(blue  < 0 ? 0 : (blue  > 255 ? 255 : blue));
+    return result;
+}
+
+void bmp24_applyKernel(t_bmp24 *img, float **kernel, int kernelSize) {
+    t_bmp24 *temp = bmp24_allocate(img->width, img->height, img->colorDepth);
+
+    for (int y = 0; y < img->height; y++) {
+        for (int x = 0; x < img->width; x++) {
+            temp->data[y][x] = bmp24_convolution(img, x, y, kernel, kernelSize);
+        }
+    }
+
+    // Copier les pixels de temp vers img
+    for (int y = 0; y < img->height; y++) {
+        for (int x = 0; x < img->width; x++) {
+            img->data[y][x] = temp->data[y][x];
+        }
+    }
+
+    bmp24_free(temp);
+}
+
+
+void bmp24_boxBlur(t_bmp24 *img) {
+    float **kernel = malloc(3 * sizeof(float *));
+    for (int i = 0; i < 3; i++) {
+        kernel[i] = malloc(3 * sizeof(float));
+        for (int j = 0; j < 3; j++) {
+            kernel[i][j] = 1.0f / 9.0f;
+        }
+    }
+
+    bmp24_applyKernel(img, kernel, 3);
+
+    for (int i = 0; i < 3; i++) free(kernel[i]);
+    free(kernel);
+}
+
+void bmp24_gaussianBlur(t_bmp24 *img) {
+    float **kernel = malloc(3 * sizeof(float *));
+    float values[3][3] = {
+        {1/16.0f, 2/16.0f, 1/16.0f},
+        {2/16.0f, 4/16.0f, 2/16.0f},
+        {1/16.0f, 2/16.0f, 1/16.0f}
+    };
+    for (int i = 0; i < 3; i++) {
+        kernel[i] = malloc(3 * sizeof(float));
+        for (int j = 0; j < 3; j++) {
+            kernel[i][j] = values[i][j];
+        }
+    }
+
+    bmp24_applyKernel(img, kernel, 3);
+
+    for (int i = 0; i < 3; i++) free(kernel[i]);
+    free(kernel);
+}
+void bmp24_outline(t_bmp24 *img) {
+    float **kernel = malloc(3 * sizeof(float *));
+    float values[3][3] = {
+        {-1, -1, -1},
+        {-1,  8, -1},
+        {-1, -1, -1}
+    };
+    for (int i = 0; i < 3; i++) {
+        kernel[i] = malloc(3 * sizeof(float));
+        for (int j = 0; j < 3; j++) {
+            kernel[i][j] = values[i][j];
+        }
+    }
+
+    bmp24_applyKernel(img, kernel, 3);
+
+    for (int i = 0; i < 3; i++) free(kernel[i]);
+    free(kernel);
+}
+void bmp24_emboss(t_bmp24 *img) {
+    float **kernel = malloc(3 * sizeof(float *));
+    float values[3][3] = {
+        {-2, -1,  0},
+        {-1,  1,  1},
+        { 0,  1,  2}
+    };
+    for (int i = 0; i < 3; i++) {
+        kernel[i] = malloc(3 * sizeof(float));
+        for (int j = 0; j < 3; j++) {
+            kernel[i][j] = values[i][j];
+        }
+    }
+
+    bmp24_applyKernel(img, kernel, 3);
+
+    for (int i = 0; i < 3; i++) free(kernel[i]);
+    free(kernel);
+}
+void bmp24_sharpen(t_bmp24 *img) {
+    float **kernel = malloc(3 * sizeof(float *));
+    float values[3][3] = {
+        { 0, -1,  0},
+        {-1,  5, -1},
+        { 0, -1,  0}
+    };
+    for (int i = 0; i < 3; i++) {
+        kernel[i] = malloc(3 * sizeof(float));
+        for (int j = 0; j < 3; j++) {
+            kernel[i][j] = values[i][j];
+        }
+    }
+
+    bmp24_applyKernel(img, kernel, 3);
+
+    for (int i = 0; i < 3; i++) free(kernel[i]);
+    free(kernel);
+}

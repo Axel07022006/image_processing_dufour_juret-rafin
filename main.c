@@ -103,6 +103,8 @@ int main() {
 
     /// Filtres de convolution ///
 
+    bmp24_sharpen(image24);
+    bmp24_saveImage(image24, "../images/flowers_color_sharpen.bmp"); // Sauvegarde
 
     // Libère la mémoire pour l'image 24 bits
     bmp24_free(image24);
