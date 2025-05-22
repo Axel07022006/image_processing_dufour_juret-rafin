@@ -101,7 +101,14 @@ int main() {
 
 
     /// Filtres de convolution ///
-
+    bmp24_boxBlur(image24);
+    bmp24_saveImage(image24, "../images/flowers_color_boxblur.bmp");
+    bmp24_gaussianBlur(image24);
+    bmp24_saveImage(image24, "../images/flowers_color_gaussian.bmp");
+    bmp24_outline(image24);
+    bmp24_saveImage(image24, "../images/flowers_color_outline.bmp");
+    bmp24_emboss(image24);
+    bmp24_saveImage(image24, "../images/flowers_color_emboss.bmp");
     bmp24_sharpen(image24);
     bmp24_saveImage(image24, "../images/flowers_color_sharpen.bmp"); // Sauvegarde
 
