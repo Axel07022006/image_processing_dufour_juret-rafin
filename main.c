@@ -46,9 +46,18 @@ int main() {
             printf("Veuillez choisir une option :\n");
             break;
             case 2:
-                bmp8_saveImage("../images/copie_lena.bmp", image);
-                printf("Image sauvagardee avec succès !");
-                printf("Veuillez choisir une option :\n");
+                if (im_choix==1) {
+                    bmp8_saveImage("../images/copie_lena.bmp", image);
+                    printf("Image sauvagardee avec succès !");
+                    printf("Veuillez choisir une option :\n");
+                }
+                if (im_choix==2) {
+                    bmp24_saveImage(image24, "../images/copie_flowers_color.bmp"); // Sauvegarde
+                    bmp24_free(image24); // Libère immédiatement
+                    printf("Image sauvagardee avec succès !");
+                    printf("Veuillez choisir une option :\n");
+                }
+
             break;
             case 3:
                 int filtre_choix=10;
@@ -134,36 +143,60 @@ int main() {
                 if (im_choix==2) {
                     switch (filtre_choix) {
                         case 1:
+                            image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_negative(image24);
-                            bmp24_saveImage(image24, "../images/flowers_color_negatif.bmp"); // Sauvegarde
+                            bmp24_saveImage(image24, "../images/flowers_color_negatif.bmp");
+                            bmp24_free(image24);
                         break;
                         case 2:
+                            image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_brightness(image24, 50);
-                            bmp24_saveImage(image24, "../images/flowers_color_bright.bmp"); // Sauvegarde
+                            bmp24_saveImage(image24, "../images/flowers_color_bright.bmp");
+                            bmp24_free(image24);
+
                         break;
                         case 3:
+                            image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_grayscale(image24);
-                            bmp24_saveImage(image24, "../images/flowers_color_gray.bmp"); // Sauvegarde
+                            bmp24_saveImage(image24, "../images/flowers_color_gray.bmp");
+                            bmp24_free(image24);
+
                         break;
                         case 4:
+                            image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_boxBlur(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_boxblur.bmp");
+                            bmp24_free(image24);
+
                         break;
                         case 5:
+                            image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_gaussianBlur(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_gaussian.bmp");
+                            bmp24_free(image24);
                         break;
                         case 6:
-                            bmp24_saveImage(image24, "../images/flowers_color_outline.bmp");
+                            // EMBOSS
+                            image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_emboss(image24);
+                            bmp24_saveImage(image24, "../images/flowers_color_emboss.bmp");
+                            bmp24_free(image24);
+
                         break;
                         case 7:
+                            // OUTLINE
+                            image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_outline(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_outline.bmp");
+                            bmp24_free(image24);
                         break;
                         case 8:
+                            // SHARPEN
+                            image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_sharpen(image24);
-                            bmp24_saveImage(image24, "../images/flowers_color_sharpen.bmp"); // Sauvegarde
+                            bmp24_saveImage(image24, "../images/flowers_color_sharpen.bmp");
+                            bmp24_free(image24);
+
                         break;
                         case 9:
                             printf("Retourner au menu_precedent :\n");
