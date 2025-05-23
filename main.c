@@ -7,7 +7,7 @@
 int main() {
 
     // Charge l'image BMP en niveaux de gris
-    t_bmp8 * image = bmp8_loadImage("../images/lena_gray.bmp");
+    t_bmp8 * image = bmp8_loadImage("../images/barbara_gray.bmp");
     t_bmp24 *image24 = bmp24_loadImage("../images/flowers_color.bmp");
     //t_bmp8 * image = bmp8_loadImage("barbara_gray.bmp");
     int choix=6;
@@ -20,41 +20,40 @@ int main() {
         printf("\t5. Quitter\n");
         printf("Choisissez parmi ces choix : ");
         scanf("%d",&choix);
-        printf("Votre choix : %d",choix);
+        printf("Votre choix : %d \n\n",choix);
         switch (choix) {
             case 1:
                 int im_choix=3;
                 while (im_choix>2) {
-                    printf("Choisissez une image parmi les deux suivantes\n");
-                    printf("1. Image de Lena_gray\n");
+                    printf("Choisissez une image parmi les deux suivantes : \n");
+                    printf("1. Image de barbara_gray\n");
                     printf("2. Images de fleurs\n");
                     scanf("%d",&im_choix);
 
                 }
                 if (im_choix==1) {
-                    char chemin_lena[]="../images/lena_gray.bmp";
-                    printf("Chemin du fichier : %s",chemin_lena);
-                    image = bmp8_loadImage("../images/lena_gray.bmp");
-                    printf("Image chargée avec succès !");
+                    char chemin_barbara[]="../images/barbara_gray.bmp";
+                    printf("Chemin du fichier : %s \n",chemin_barbara);
+                    image = bmp8_loadImage("../images/barbara_gray.bmp");
+                    printf("Image chargee avec succes ! \n");
                 }
                 if (im_choix==2) {
                     char chemin_flowers[]="../images/flowers_color.bmp";
-                    printf("Chemin du fichier :%s",chemin_flowers);
+                    printf("Chemin du fichier :%s \n",chemin_flowers);
                     image24 = bmp24_loadImage("../images/flowers_color.bmp");
-                    printf("Image chargée avec succès !");
+                    printf("Image chargee avec succes ! \n");
                 }
-            printf("Veuillez choisir une option :\n");
             break;
             case 2:
                 if (im_choix==1) {
-                    bmp8_saveImage("../images/copie_lena.bmp", image);
-                    printf("Image sauvagardee avec succès !");
+                    bmp8_saveImage("../images/copie_barbara.bmp", image);
+                    printf("Image sauvagardee avec succes ! \n");
                     printf("Veuillez choisir une option :\n");
                 }
                 if (im_choix==2) {
                     bmp24_saveImage(image24, "../images/copie_flowers_color.bmp"); // Sauvegarde
-                    bmp24_free(image24); // Libère immédiatement
-                    printf("Image sauvagardee avec succès !");
+                    bmp24_free(image24); // Libere immediatement
+                    printf("Image sauvagardee avec succes ! \n");
                     printf("Veuillez choisir une option :\n");
                 }
 
@@ -78,66 +77,74 @@ int main() {
                     switch (filtre_choix) {
                         case 1:
                             bmp8_negative(image);
-                            bmp8_saveImage("../images/lena_negatif.bmp", image);
+                            bmp8_saveImage("../images/barbara_negatif.bmp", image);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 2:
                             bmp8_brightness(image, 50);
-                            bmp8_saveImage("../images/lena_bright.bmp", image);
+                            bmp8_saveImage("../images/barbara_bright.bmp", image);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 3:
                             // TRANSFORME L'IMAGE EN UNE IMAGE BINAIRE
                             bmp8_threshold(image,128);
-                            bmp8_saveImage("../images/lena_binary.bmp", image); // Sauvegarde
+                            bmp8_saveImage("../images/barbara_binary.bmp", image); // Sauvegarde
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 4:
-                            image = bmp8_loadImage("../images/lena_gray.bmp");
+                            image = bmp8_loadImage("../images/barbara_gray.bmp");
                             float **kernel = createBoxBlurKernel();
                             bmp8_applyFilter(image, kernel, 3);
-                            bmp8_saveImage("../images/lena_boxblur.bmp", image);
+                            bmp8_saveImage("../images/barbara_boxblur.bmp", image);
                             freeKernel(kernel, 3);
                             bmp8_free(image);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 5:
                             //Gaussian Blur
-                            image = bmp8_loadImage("../images/lena_gray.bmp");
+                            image = bmp8_loadImage("../images/barbara_gray.bmp");
                             kernel = createGaussianBlurKernel();
                             bmp8_applyFilter(image, kernel, 2);
-                            bmp8_saveImage("../images/lena_gaussian.bmp", image);
+                            bmp8_saveImage("../images/barbara_gaussian.bmp", image);
                             freeKernel(kernel, 3);
                             bmp8_free(image);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 6:
                             // Emboss
-                            image = bmp8_loadImage("../images/lena_gray.bmp");
+                            image = bmp8_loadImage("../images/barbara_gray.bmp");
                             kernel = createEmbossKernel();
                             bmp8_applyFilter(image, kernel, 3);
-                            bmp8_saveImage("../images/lena_emboss.bmp", image);
+                            bmp8_saveImage("../images/barbara_emboss.bmp", image);
                             freeKernel(kernel, 3);
                             bmp8_free(image);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 7:
                             // Outline
-                            image = bmp8_loadImage("../images/lena_gray.bmp");
+                            image = bmp8_loadImage("../images/barbara_gray.bmp");
                             kernel = createOutlineKernel();
                             bmp8_applyFilter(image, kernel, 3);
-                            bmp8_saveImage("../images/lena_outline.bmp", image);
+                            bmp8_saveImage("../images/barbara_outline.bmp", image);
                             freeKernel(kernel, 3);
                             bmp8_free(image);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 8:
                             // Sharpen
-                            image = bmp8_loadImage("../images/lena_gray.bmp");
+                            image = bmp8_loadImage("../images/barbara_gray.bmp");
                             kernel = createSharpenKernel();
                             bmp8_applyFilter(image, kernel, 3);
-                            bmp8_saveImage("../images/lena_sharpen.bmp", image);
+                            bmp8_saveImage("../images/barbara_sharpen.bmp", image);
                             freeKernel(kernel, 3);
                             bmp8_free(image);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 9:
                             printf("Retourner au menu_precedent :\n");
                         break;
                     }
-                    printf("Filtre applique avec succes !\n");
+
                     printf("Veuillez choisir une option :\n");
                 }
                 if (im_choix==2) {
@@ -147,12 +154,14 @@ int main() {
                             bmp24_negative(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_negatif.bmp");
                             bmp24_free(image24);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 2:
                             image24 = bmp24_loadImage("../images/flowers_color.bmp");
                             bmp24_brightness(image24, 50);
                             bmp24_saveImage(image24, "../images/flowers_color_bright.bmp");
                             bmp24_free(image24);
+                            printf("Filtre applique avec succes ! \n\n");
 
                         break;
                         case 3:
@@ -160,6 +169,7 @@ int main() {
                             bmp24_grayscale(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_gray.bmp");
                             bmp24_free(image24);
+                            printf("Filtre applique avec succes ! \n\n");
 
                         break;
                         case 4:
@@ -167,6 +177,7 @@ int main() {
                             bmp24_boxBlur(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_boxblur.bmp");
                             bmp24_free(image24);
+                            printf("Filtre applique avec succes ! \n\n");
 
                         break;
                         case 5:
@@ -174,6 +185,7 @@ int main() {
                             bmp24_gaussianBlur(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_gaussian.bmp");
                             bmp24_free(image24);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 6:
                             // EMBOSS
@@ -181,6 +193,7 @@ int main() {
                             bmp24_emboss(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_emboss.bmp");
                             bmp24_free(image24);
+                            printf("Filtre applique avec succes ! \n\n");
 
                         break;
                         case 7:
@@ -189,6 +202,7 @@ int main() {
                             bmp24_outline(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_outline.bmp");
                             bmp24_free(image24);
+                            printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 8:
                             // SHARPEN
@@ -196,13 +210,13 @@ int main() {
                             bmp24_sharpen(image24);
                             bmp24_saveImage(image24, "../images/flowers_color_sharpen.bmp");
                             bmp24_free(image24);
+                            printf("Filtre applique avec succes ! \n\n");
 
                         break;
                         case 9:
                             printf("Retourner au menu_precedent :\n");
                         break;
                     }
-                    printf("Filtre applique avec succes !\n");
                     printf("Veuillez choisir une option :\n");
                 }
             case 4:
@@ -218,116 +232,16 @@ int main() {
                 }
             break;
             case 5:
-                printf("Vous avez quitte le menu");
+                printf("\nVous avez quitte le menu");
         }
 
     }
-    // verifie que l'image a bien été chargée
+    // verifie que l'image a bien ete chargee
     if (image == NULL) {
         printf("Erreur : Impossible de charger l'image.\n");
         return 1;
     }
-/*
-    // affiche les informations de l'image
-    bmp8_printInfo(image);
-    bmp8_saveImage("../images/copie_lena.bmp", image);// Sauvegarde
-
-    // APPLIQUE LE NEGATIF
-    bmp8_negative(image);
-    bmp8_saveImage("../images/lena_negatif.bmp", image); // Sauvegarde
-
-    // APPLIQUE DE LA LUMINOSITE, EN AJOUTANT +50 PIXEL
-    bmp8_brightness(image, 50);
-    bmp8_saveImage("../images/lena_bright.bmp", image);// Sauvegarde
-
-    // TRANSFORME L'IMAGE EN UNE IMAGE BINAIRE
-    bmp8_threshold(image,128);
-    bmp8_saveImage("../images/lena_binary.bmp", image); // Sauvegarde
-
-    //Box  Blur
-    image = bmp8_loadImage("../images/lena_gray.bmp");
-    float **kernel = createBoxBlurKernel();
-    bmp8_applyFilter(image, kernel, 3);
-    bmp8_saveImage("../images/lena_boxblur.bmp", image);
-    freeKernel(kernel, 3);
-    bmp8_free(image);
 
 
-    //Gaussian Blur
-    image = bmp8_loadImage("../images/lena_gray.bmp");
-    kernel = createGaussianBlurKernel();
-    bmp8_applyFilter(image, kernel, 2);
-    bmp8_saveImage("../images/lena_gaussian.bmp", image);
-    freeKernel(kernel, 3);
-    bmp8_free(image);
-
-    // Outline
-    image = bmp8_loadImage("../images/lena_gray.bmp");
-    kernel = createOutlineKernel();
-    bmp8_applyFilter(image, kernel, 3);
-    bmp8_saveImage("../images/lena_outline.bmp", image);
-    freeKernel(kernel, 3);
-    bmp8_free(image);
-
-    // Emboss
-    image = bmp8_loadImage("../images/lena_gray.bmp");
-    kernel = createEmbossKernel();
-    bmp8_applyFilter(image, kernel, 3);
-    bmp8_saveImage("../images/lena_emboss.bmp", image);
-    freeKernel(kernel, 3);
-    bmp8_free(image);
-
-    // Sharpen
-    image = bmp8_loadImage("../images/lena_gray.bmp");
-    kernel = createSharpenKernel();
-    bmp8_applyFilter(image, kernel, 3);
-    bmp8_saveImage("../images/lena_sharpen.bmp", image);
-    freeKernel(kernel, 3);
-    bmp8_free(image);
-
-    // Partie 2 : Traitement de l'image 24 bits (couleur)
-    // Vérifie que l'image 24 bits a bien été chargée
-    if (image24 == NULL) {
-        printf("Erreur : Impossible de charger l'image 24 bits.\n");
-        return 1;
-    }
-
-    // Affiche les informations de l'image 24 bits
-    printf("Informations de l'image 24 bits :\n");
-    printf("Largeur : %d\n", image24->width);
-    printf("Hauteur : %d\n", image24->height);
-    printf("Profondeur de couleur : %d\n", image24->colorDepth);
-
-    bmp24_saveImage(image24, "../images/copie_flowers_color.bmp"); // Sauvegarde
-
-    // Applique le négatif sur l'image 24 bits
-    bmp24_negative(image24);
-    bmp24_saveImage(image24, "../images/flowers_color_negatif.bmp"); // Sauvegarde
-
-    // Applique de la luminosité, en ajoutant +50 pixels (image 24 bits)
-    bmp24_brightness(image24, 50);
-    bmp24_saveImage(image24, "../images/flowers_color_bright.bmp"); // Sauvegarde
-
-    // Transforme l'image en niveaux de gris (image 24 bits)
-    bmp24_grayscale(image24);
-    bmp24_saveImage(image24, "../images/flowers_color_gray.bmp"); // Sauvegarde
-
-
-
-
-   /// Filtres de convolution ///
-    bmp24_boxBlur(image24);
-    bmp24_saveImage(image24, "../images/flowers_color_boxblur.bmp");
-    bmp24_gaussianBlur(image24);
-    bmp24_saveImage(image24, "../images/flowers_color_gaussian.bmp");
-    bmp24_outline(image24);
-    bmp24_saveImage(image24, "../images/flowers_color_outline.bmp");
-    bmp24_emboss(image24);
-    bmp24_saveImage(image24, "../images/flowers_color_emboss.bmp");
-    bmp24_sharpen(image24);
-    bmp24_saveImage(image24, "../images/flowers_color_sharpen.bmp"); // Sauvegarde
-    */
-    // Libère la mémoire pour l'image 24 bits
-    bmp24_free(image24);
     return 0;
 }
