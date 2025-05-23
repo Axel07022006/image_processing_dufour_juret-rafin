@@ -241,6 +241,5 @@ int main() {
         printf("Erreur : Impossible de charger l'image.\n");
         return 1;
     }
-
     return 0;
 }
