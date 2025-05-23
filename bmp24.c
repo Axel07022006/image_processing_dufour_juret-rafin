@@ -3,7 +3,8 @@
 #include <stdint.h>
 #include <string.h>
 #include "bmp24.h"
-
+#include "color_conversion.h"
+#include <math.h>
 
 // alloue la matrice de pixels
 t_pixel ** bmp24_allocateDataPixels(int width, int height, int colorDepth) {
@@ -355,4 +356,79 @@ void bmp24_sharpen(t_bmp24 *img) {
 
     for (int i = 0; i < 3; i++) free(kernel[i]);
     free(kernel);
+}
+
+
+
+void bmp24_equalize(t_bmp24 *img) {
+    int width = img->width;
+    int height = img->height;
+    int hist[256] = {0};
+    int cdf[256] = {0};
+    int hist_eq[256] = {0};
+    int N = width * height;
+
+    float **Y = malloc(height * sizeof(float *));
+    float **U = malloc(height * sizeof(float *));
+    float **V = malloc(height * sizeof(float *));
+    for (int i = 0; i < height; i++) {
+        Y[i] = malloc(width * sizeof(float));
+        U[i] = malloc(width * sizeof(float));
+        V[i] = malloc(width * sizeof(float));
+    }
+
+    // 1. Conversion RGB -> YUV et histogramme Y
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            rgb_to_yuv(img->data[i][j].red, img->data[i][j].green, img->data[i][j].blue,
+                       &Y[i][j], &U[i][j], &V[i][j]);
+            int y_int = round(Y[i][j]);
+            y_int = y_int < 0 ? 0 : (y_int > 255 ? 255 : y_int);
+            hist[y_int]++;
+        }
+    }
+
+    // 2. CDF
+    cdf[0] = hist[0];
+    for (int i = 1; i < 256; i++) {
+        cdf[i] = cdf[i - 1] + hist[i];
+    }
+
+    // 3. Normalisation
+    int cdf_min = 0;
+    for (int i = 0; i < 256; i++) {
+        if (cdf[i] > 0) {
+            cdf_min = cdf[i];
+            break;
+        }
+    }
+
+    for (int i = 0; i < 256; i++) {
+        hist_eq[i] = round(((float)(cdf[i] - cdf_min) / (N - cdf_min)) * 255);
+    }
+
+    // 4. Appliquer nouvelle Y et reconvertir en RGB
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            int y_old = round(Y[i][j]);
+            y_old = y_old < 0 ? 0 : (y_old > 255 ? 255 : y_old);
+            Y[i][j] = hist_eq[y_old];
+
+            uint8_t r, g, b;
+            yuv_to_rgb(Y[i][j], U[i][j], V[i][j], &r, &g, &b);
+            img->data[i][j].red = r;
+            img->data[i][j].green = g;
+            img->data[i][j].blue = b;
+        }
+    }
+
+    // Libération mémoire
+    for (int i = 0; i < height; i++) {
+        free(Y[i]);
+        free(U[i]);
+        free(V[i]);
+    }
+    free(Y);
+    free(U);
+    free(V);
 }
