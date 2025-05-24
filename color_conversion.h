@@ -1,7 +1,3 @@
-//
-// Created by mat18 on 23/05/2025.
-//
-
 #ifndef CONVERSION_COULEUR_H
 #define CONVERSION_COULEUR_H
 
