@@ -1,7 +1,7 @@
 #ifndef T_BMP8_H
 #define T_BMP8_H
 
-
+//structure pour représenter une image BMP 8 bits
 typedef struct{
     unsigned char header[54];
     unsigned char colorTable[1024];
@@ -13,6 +13,8 @@ typedef struct{
     unsigned int dataSize;
 }t_bmp8;
 
+
+//ensemble des prototypes du fichier bmp8.c
 t_bmp8 * bmp8_loadImage(const char * filename);
 void bmp8_saveImage(const char * filename, t_bmp8 * img);
 void bmp8_free(t_bmp8 * img);
