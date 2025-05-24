@@ -10,7 +10,7 @@ int main() {
     t_bmp24 *image24 = bmp24_loadImage("../images/flowers_color.bmp");
     //t_bmp8 * image = bmp8_loadImage("barbara_gray.bmp");
     if (image == NULL || image24 == NULL) {
-        printf("Erreur : Impossible de charger l'image.\n");
+        printf("testErreur : Impossible de charger l'image.\n");
         return 1;
     }
     int im_choix=0;
