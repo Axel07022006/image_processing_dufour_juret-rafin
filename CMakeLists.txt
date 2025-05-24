@@ -6,9 +6,7 @@ set(CMAKE_C_STANDARD 11)
 include_directories(.)
 
 add_executable(nouveau_image_processing_dufour_juret_rafin
-        bmp24.c
-        bmp24.h
-        bmp8.c
-        bmp8.h
-        main.c
+    bmp24.c
+    bmp8.c
+    main.c
         color_conversion.c)
