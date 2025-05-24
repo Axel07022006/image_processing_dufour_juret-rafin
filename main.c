@@ -2,35 +2,39 @@
 #include <stdlib.h>
 #include "bmp8.h"
 #include "bmp24.h"
-
+#include "color_conversion.h"
 
 int main() {
-
     // Charge l'image BMP en niveaux de gris
     t_bmp8 * image = bmp8_loadImage("../images/barbara_gray.bmp");
     t_bmp24 *image24 = bmp24_loadImage("../images/flowers_color.bmp");
     //t_bmp8 * image = bmp8_loadImage("barbara_gray.bmp");
-    int choix=6;
-    while (choix!=5 ) {
+    if (image == NULL || image24 == NULL) {
+        printf("Erreur : Impossible de charger l'image.\n");
+        return 1;
+    }
+    int im_choix=0;
+    while (im_choix==0) {
+        printf("Choisissez une image parmi les deux suivantes : \n");
+        printf("1. Image de barbara_gray\n");
+        printf("2. Images de fleurs\n");
+        printf("Vous choisissez : ");
+        scanf("%d",&im_choix);
+    }
+    int choix=7;
+    while (choix!=6 ) {
         printf("Veuillez choisir une option :\n");
         printf("\t1. Ouvrir une image\n");
         printf("\t2. Sauvegarder une image\n");
         printf("\t3. Appliquer un filtre\n");
         printf("\t4. Afficher les informations de l'image\n");
-        printf("\t5. Quitter\n");
+        printf("\t5. Generer l'image egalise\n");
+        printf("\t6. Quitter\n");
         printf("Choisissez parmi ces choix : ");
         scanf("%d",&choix);
         printf("Votre choix : %d \n\n",choix);
         switch (choix) {
             case 1:
-                int im_choix=3;
-                while (im_choix>2) {
-                    printf("Choisissez une image parmi les deux suivantes : \n");
-                    printf("1. Image de barbara_gray\n");
-                    printf("2. Images de fleurs\n");
-                    scanf("%d",&im_choix);
-
-                }
                 if (im_choix==1) {
                     char chemin_barbara[]="../images/barbara_gray.bmp";
                     printf("Chemin du fichier : %s \n",chemin_barbara);
@@ -162,7 +166,6 @@ int main() {
                             bmp24_saveImage(image24, "../images/flowers_color_bright.bmp");
                             bmp24_free(image24);
                             printf("Filtre applique avec succes ! \n\n");
-
                         break;
                         case 3:
                             image24 = bmp24_loadImage("../images/flowers_color.bmp");
@@ -170,7 +173,6 @@ int main() {
                             bmp24_saveImage(image24, "../images/flowers_color_gray.bmp");
                             bmp24_free(image24);
                             printf("Filtre applique avec succes ! \n\n");
-
                         break;
                         case 4:
                             image24 = bmp24_loadImage("../images/flowers_color.bmp");
@@ -178,7 +180,6 @@ int main() {
                             bmp24_saveImage(image24, "../images/flowers_color_boxblur.bmp");
                             bmp24_free(image24);
                             printf("Filtre applique avec succes ! \n\n");
-
                         break;
                         case 5:
                             image24 = bmp24_loadImage("../images/flowers_color.bmp");
@@ -219,6 +220,7 @@ int main() {
                     }
                     printf("Veuillez choisir une option :\n");
                 }
+            break;
             case 4:
                 if (im_choix==1) {
                     bmp8_printInfo(image);
@@ -228,18 +230,35 @@ int main() {
                     printf("Largeur : %d\n", image24->width);
                     printf("Hauteur : %d\n", image24->height);
                     printf("Profondeur de couleur : %d\n", image24->colorDepth);
-
                 }
             break;
             case 5:
-                printf("\nVous avez quitte le menu");
+                if (im_choix==1) {
+                    if (image) {
+                        unsigned int *hist = bmp8_computeHistogram(image);
+                        unsigned int *cdf = bmp8_computeCDF(hist);
+                        bmp8_equalize(image, cdf);
+                        bmp8_saveImage("../images/barbara_gray_equalized.bmp", image);
+                        printf("L'image egalisee a bien ete genere !\n");
+                        bmp8_free(image);
+                        free(hist);
+                        free(cdf);
+                    }
+                }if (im_choix==2) {
+                    if (image24) {
+                        bmp24_equalize(image24);
+                        bmp24_saveImage(image24, "../images/flowers_equalized.bmp");
+                        printf("L'image egalisee a bien ete genere !\n");
+                        bmp24_free(image24);
+                    }
+                }
+            break;
+            case 6:
+                printf("\nVous avez quitte le menu\n");
+            break;
         }
 
     }
-    // verifie que l'image a bien ete chargee
-    if (image == NULL) {
-        printf("Erreur : Impossible de charger l'image.\n");
-        return 1;
-    }
+
     return 0;
 }

@@ -84,5 +84,6 @@ void bmp24_outline(t_bmp24 *img);
 void bmp24_emboss(t_bmp24 *img);
 void bmp24_sharpen(t_bmp24 *img);
 
+void bmp24_equalize(t_bmp24 *img);
 
 #endif // T_BMP24_H
