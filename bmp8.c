@@ -64,33 +64,33 @@ t_bmp8 * bmp8_loadImage(const char * filename) {
 void bmp8_saveImage(const char * filename, t_bmp8 * img) {
     FILE *file = fopen(filename, "wb");
     if (file == NULL) {
-        printf("Erreur lors de l'ouverture du fichier pour l'ecriture\n");
+        printf("Erreur lors de l'ouverture du fichier pour l'écriture\n");
         return;
     }
 
     // Écrire l'en-tête BMP (54 octets)
     if (fwrite(img->header, sizeof(unsigned char), 54, file) != 54) {
-        printf("Erreur lors de l'ecriture de l'en-tete\n");
+        printf("Erreur lors de l'écriture de l'en-tête\n");
         fclose(file);
         return;
     }
 
     // Écrire la table de couleurs (1024 octets pour image 8 bits)
     if (fwrite(img->colorTable, sizeof(unsigned char), 1024, file) != 1024) {
-        printf("Erreur lors de l'ecriture de la table de couleurs\n");
+        printf("Erreur lors de l'écriture de la table de couleurs\n");
         fclose(file);
         return;
     }
 
     // Écrire les données de l'image
     if (fwrite(img->data, sizeof(unsigned char), img->dataSize, file) != img->dataSize) {
-        printf("Erreur lors de l'ecriture des données d'image\n");
+        printf("Erreur lors de l'écriture des données d'image\n");
         fclose(file);
         return;
     }
 
     fclose(file);
-    printf("Image enregistree avec succes dans le dossier Images'%s'\n", filename);
+    printf("Image enregistrée avec succès dans le dossier Images'%s'\n", filename);
 }
 ///////////////////////
 
@@ -272,58 +272,3 @@ float **createSharpenKernel() {
     return createKernel(values, 1.0f);
 }
 ///////////////////////
-///
-
-#include <math.h>
-
-
-unsigned int * bmp8_computeHistogram(t_bmp8 * img) {
-    unsigned int *hist = (unsigned int *)calloc(256, sizeof(unsigned int));
-    if (!hist) {
-        fprintf(stderr, "Erreur d'allocation pour l'histogramme.\n");
-        return NULL;
-    }
-
-    for (unsigned int i = 0; i < img->dataSize; i++) {
-        hist[img->data[i]]++;
-    }
-
-    return hist;
-}
-
-unsigned int * bmp8_computeCDF(unsigned int * hist) {
-    unsigned int *hist_eq = (unsigned int *)calloc(256, sizeof(unsigned int));
-    if (!hist_eq) {
-        fprintf(stderr, "Erreur d'allocation pour la CDF.\n");
-        return NULL;
-    }
-
-    unsigned int cdf[256] = {0};
-    unsigned int cdfmin = 0;
-    unsigned int total_pixels = 0;
-
-    for (int i = 0; i < 256; i++) {
-        total_pixels += hist[i];
-        cdf[i] = (i == 0) ? hist[i] : cdf[i - 1] + hist[i];
-        if (cdfmin == 0 && cdf[i] != 0) {
-            cdfmin = cdf[i];
-        }
-    }
-
-    for (int i = 0; i < 256; i++) {
-        hist_eq[i] = round(((double)(cdf[i] - cdfmin) / (total_pixels - cdfmin)) * 255);
-    }
-
-    return hist_eq;
-}
-
-void bmp8_equalize(t_bmp8 * img, unsigned int * hist_eq) {
-    if (!img || !img->data || !hist_eq) {
-        fprintf(stderr, "Erreur : image ou histogramme egalise invalide.\n");
-        return;
-    }
-
-    for (unsigned int i = 0; i < img->dataSize; i++) {
-        img->data[i] = (unsigned char)hist_eq[img->data[i]];
-    }
-}
