@@ -2,7 +2,7 @@
 #define CONVERSION_COULEUR_H
 
 #include <stdint.h>
-
+// Ici, on déclare les fonctions pour les relier à bmp8.c
 void rgb_to_yuv(uint8_t R, uint8_t G, uint8_t B, float *Y, float *U, float *V);
 void yuv_to_rgb(float Y, float U, float V, uint8_t *R, uint8_t *G, uint8_t *B);
 
