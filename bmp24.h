@@ -2,7 +2,13 @@
 #define T_BMP24_H
 
 #include <stdint.h> // Pour uint8_t, uint16_t, uint32_t, int32_t
-#pragma pack(push, 1) // pour éviter le padding de structure
+
+
+#pragma pack(push, 1) //c'est super important car ça permet de désactiver l'alignement mémoire automatique qui crée des
+//espaces (le padding) et qui décale tous les champs du fichier,car chaque information de l'image est organisée et il ne faut pas de décalage.
+
+
+
 // Constantes utiles
 #define BITMAP_MAGIC 0x00
 #define BITMAP_SIZE 0x02
@@ -18,14 +24,14 @@
 #define DEFAULT_DEPTH 0x18 // 24 bits
 
 
-// Structure pour représenter un pixel RGB
+// Structure pour représenter le pixel RGB
 typedef struct {
-    uint8_t red;//rouge
-    uint8_t green; //vert
-    uint8_t blue;  //Bleu
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
 }t_pixel;
 
-// Structure pour l'en-tête du fichier BMP (14 octets)
+//structure pour l'en-tête du fichier BMP
 typedef struct {
     uint16_t type;
     uint32_t size;
@@ -34,7 +40,7 @@ typedef struct {
     uint32_t offset;
 } t_bmp_header;
 
-// Structure pour l'en-tête info du fichier BMP (40 octets)
+//structure pour l'en-tête info du fichier BMP
 typedef struct {
     uint32_t size;
     int32_t width;
@@ -49,16 +55,17 @@ typedef struct {
     uint32_t importantcolors;
 } t_bmp_info;
 
-// Structure principale pour une image BMP 24 bits
+//structure pour une image BMP 24 bits
 typedef struct {
     t_bmp_header header;
     t_bmp_info header_info;
     int width;
     int height;
-    int colorDepth;   // 24 normalement
-    t_pixel ** data;// Matrice de pixels
+    int colorDepth;
+    t_pixel ** data;//matrice de pixels
 } t_bmp24;
 
+//ensemble des prototypes du fichier bmp24.c
 
 t_pixel ** bmp24_allocateDataPixels(int width, int height, int colorDepth);
 void bmp24_freeDataPixels(t_pixel **pixels, int height);
@@ -86,4 +93,5 @@ void bmp24_sharpen(t_bmp24 *img);
 
 void bmp24_equalize(t_bmp24 *img);
 
+#pragma pack(pop)//on remet l'alignement mémoire par défaut
 #endif // T_BMP24_H
