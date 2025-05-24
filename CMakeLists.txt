@@ -10,4 +10,5 @@ add_executable(nouveau_image_processing_dufour_juret_rafin
     bmp24.h
     bmp8.c
     bmp8.h
-    main.c)
+    main.c
+        color_conversion.c)
