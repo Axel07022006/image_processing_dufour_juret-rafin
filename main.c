@@ -131,7 +131,7 @@ int main() {
                             printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 5:
-                            //Filtre de flou Gaussient
+                            //Filtre de flou Gaussien
                             image = bmp8_loadImage("../images/barbara_gray.bmp");
                             //On crée la table de Kernel correspondant au filtre de flou gaussien
                             kernel = createGaussianBlurKernel();
@@ -142,11 +142,11 @@ int main() {
                             printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 6:
-                            // Filtre de netteté
+                            //On applique ici le filtre de relief
                             image = bmp8_loadImage("../images/barbara_gray.bmp");
-                            kernel = createEmbossKernel();
+                            kernel = createSharpenKernel();
                             bmp8_applyFilter(image, kernel, 3);
-                            bmp8_saveImage("../images/barbara_emboss.bmp", image);
+                            bmp8_saveImage("../images/barbara_sharpen.bmp", image);
                             freeKernel(kernel, 3);
                             bmp8_free(image);
                             printf("Filtre applique avec succes ! \n\n");
@@ -162,11 +162,11 @@ int main() {
                             printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 8:
-                            //On applique ici le filtre de relief
+                            // Filtre de netteté
                             image = bmp8_loadImage("../images/barbara_gray.bmp");
-                            kernel = createSharpenKernel();
+                            kernel = createEmbossKernel();
                             bmp8_applyFilter(image, kernel, 3);
-                            bmp8_saveImage("../images/barbara_sharpen.bmp", image);
+                            bmp8_saveImage("../images/barbara_emboss.bmp", image);
                             freeKernel(kernel, 3);
                             bmp8_free(image);
                             printf("Filtre applique avec succes ! \n\n");
@@ -224,13 +224,12 @@ int main() {
                             printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 6:
-                            //On applique le filtre de netteté
+                            // On applique le filtre de relief
                             image24 = bmp24_loadImage("../images/flowers_color.bmp");
-                            bmp24_emboss(image24);
-                            bmp24_saveImage(image24, "../images/flowers_color_emboss.bmp");
+                            bmp24_sharpen(image24);
+                            bmp24_saveImage(image24, "../images/flowers_color_sharpen.bmp");
                             bmp24_free(image24);
                             printf("Filtre applique avec succes ! \n\n");
-
                         break;
                         case 7:
                             // On applique le filtre de contour pour les images de 24 bits
@@ -241,10 +240,10 @@ int main() {
                             printf("Filtre applique avec succes ! \n\n");
                         break;
                         case 8:
-                            // On applique le filtre de relief
+                            //On applique le filtre de netteté
                             image24 = bmp24_loadImage("../images/flowers_color.bmp");
-                            bmp24_sharpen(image24);
-                            bmp24_saveImage(image24, "../images/flowers_color_sharpen.bmp");
+                            bmp24_emboss(image24);
+                            bmp24_saveImage(image24, "../images/flowers_color_emboss.bmp");
                             bmp24_free(image24);
                             printf("Filtre applique avec succes ! \n\n");
 
